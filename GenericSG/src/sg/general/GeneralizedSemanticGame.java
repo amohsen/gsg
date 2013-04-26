@@ -1,49 +1,52 @@
 package sg.general;
 
-import sg.Assignment;
-import sg.Structure;
+import java.util.Map;
+
 import sg.Scholar;
 import sg.Scholar.Decision;
+import claim.AndCompound;
 import claim.Compound;
+import claim.ExistentiallyQuantified;
 import claim.Formula;
+import claim.Function;
+import claim.Let;
 import claim.Negated;
+import claim.OrCompound;
 import claim.Predicate;
 import claim.Quantified;
-import claim.Compound.Connective;
-import claim.Quantified.Quantifier;
+import claim.UniversallyQuantified;
+import claim.Var;
 
 public class GeneralizedSemanticGame {
 	public static void GS(Formula f, 
-			Assignment sa, 
-			Structure ss, Structure ts, 
+			Map<Var<?>, Object> sa, 
 			TranslatorFactory transFactory, 
 			Scholar ver, Scholar fal, boolean vas /*is the verifier at the source lab?*/){
 		Translator trans = transFactory.create();
-		Assignment ta = trans.translateClaimParameters(f.getId(), sa);
-		GS(f, sa, ta, ss, ts, trans, ver, fal, vas);
+		Map<Var<?>, Object> ta = trans.translateParametersToTarget(sa);
+		GS(f, sa, ta, trans, ver, fal, vas);
 	}
 	
 	public static void GS(Formula f, 
-			Assignment sa, Assignment ta, 
-			Structure ss, Structure ts, 
+			Map<Var<?>, Object> sa, Map<Var<?>, Object> ta, 
 			Translator trans, 
 			Scholar ver, Scholar fal,
 			boolean vas){
-		System.out.println("SG for formula: "+f.getId()+". Verifier is "+ ver.getName() + ". Falsifier is "+ fal.getName()+". Verifier is "+ (vas?"":"not ") +"at source. Source is interpreted in structure "+ss.getClass().getCanonicalName()+". Target is interpreted in structure "+ts.getClass().getCanonicalName()+".");
+		System.out.println("SG for formula: "+f.getClass().getCanonicalName()+". Verifier is "+ ver.getName() + ". Falsifier is "+ fal.getName()+". Verifier is "+ (vas?"":"not ") +"at source.");
 		System.out.println("Source assignment is: "+ sa);
 		System.out.println("Target assignment is: "+ ta);
 		if (f instanceof Predicate) {
 			Predicate pf = (Predicate) f;
 			System.out.println("Formula is a predicate, evaluating in both structures ...");
 			//Execute source predicate in sa
-			boolean sResult = ss.executePredicate(sa, pf);
-			System.out.println("Predicate "+ pf.name + " "+(sResult?"holds":"does not hold")+" under assignment "+ sa);
+			boolean sResult = pf.execute(sa);
+			System.out.println("Predicate "+ pf.getClass().getCanonicalName() +"(" + pf.getParameters() + ") "+(sResult?"holds":"does not hold")+" under assignment "+ sa);
 			//Translate source predicate to the target model
-			Predicate tp = trans.translateSrcPredicate(pf);
-			System.out.println("Predicate "+ pf.name + " translates to predicate "+ tp.name);
+			Predicate tp = trans.translatePredicateToTarget(pf);
+			System.out.println("Predicate "+ pf.getClass().getCanonicalName() +"(" + pf.getParameters() + ") "+ " translates to predicate "+ tp.getClass().getCanonicalName()+"(" + tp.getParameters() + ") ");
 			//Execute target predicate in ta
-			boolean tResult = ts.executePredicate(ta, tp);
-			System.out.println("Predicate "+ tp.name + " "+(tResult?"holds":"does not hold")+" under assignment "+ ta);
+			boolean tResult = tp.execute(ta);
+			System.out.println("Predicate "+ tp.getClass().getCanonicalName() +"(" + tp.getParameters() + ") "+(tResult?"holds":"does not hold")+" under assignment "+ ta);
 			//Check the results
 			if(sResult!=tResult){
 				//Translation is not ok
@@ -56,58 +59,91 @@ public class GeneralizedSemanticGame {
 		}else if (f instanceof Negated) {
 			Negated nf = (Negated) f;
 			System.out.println("Formula is negated, reversing roles ...");
-			GS(nf.subformula, sa, ta, ss, ts, trans, fal, ver, !vas);
+			GS(nf.getSubFormula(), sa, ta, trans, fal, ver, !vas);
 		}else if (f instanceof Compound) {
 			Compound cf = (Compound) f;
 			Decision d;
-			if(cf.Connective == Connective.AND){
+			if(cf instanceof AndCompound){
 				System.out.println("Formula is compounded with and, falsifier choosing subformula ...");
 				d = fal.selectSubformula(cf, vas?ta:sa);
 				System.out.println("Falsifier chose"+ d +" subformula, Continuing with the chosen subformula ...");
-			}else{ //Or Connective
+			}else if(cf instanceof OrCompound){
 				System.out.println("Formula is compounded with or, verifier choosing subformula ...");
 				d = ver.selectSubformula(cf, vas?sa:ta);
 				System.out.println("Verifier chose"+ d +" subformula, Continuing with the chosen subformula ...");
+			}else{
+				throw new RuntimeException("New compound type detected: "+ cf.getClass().getCanonicalName());	
 			}
 			if(d == Decision.LEFT){
-				GS(cf.left, sa, ta, ss, ts, trans, ver, fal, vas);
+				GS(cf.getLeft(), sa, ta, trans, ver, fal, vas);
 			}else{ //RIGHT
-				GS(cf.right, sa, ta, ss, ts, trans, ver, fal, vas);
+				GS(cf.getRight(), sa, ta, trans, ver, fal, vas);
 			}
 		}else if (f instanceof Quantified) {
 			Quantified qf = (Quantified) f;
-			String val;
-			String tType = trans.translateTypeToTarget(qf.type);
-			System.out.println("Source type "+ qf.type + " translates to target type "+tType);
-			if(qf.quantifier == Quantifier.UNIVERSAL){
+			Object val;
+			Var<?> sVar = qf.getVar();
+			Var<?> tVar = trans.translateVarToTarget(sVar);
+			System.out.println("Source var "+ sVar + " translates to target var "+tVar);
+			if(qf instanceof UniversallyQuantified){
 				System.out.println("Formula is universally quantified, falsifier providing value ...");
 				val = fal.provideValue(qf, vas?ta:sa);
 				System.out.println("Falsifier provided: "+ val+ " . Continuing with the subforumula ...");
 				if(vas){//fat
-					ta.add(qf.var, tType, val);
-					String sVal = trans.translateValueToSource(qf.id, val);
-					sa.add(qf.var, qf.type, sVal);
+					ta.put(tVar, val);
+					Object sVal = trans.translateValueToSource(val);
+					sa.put(sVar, sVal);
 				}else{//fas
-					sa.add(qf.var, qf.type, val);
-					String tVal = trans.translateValueToTarget(qf.id, val);
-					ta.add(qf.var, tType, tVal);
+					sa.put(sVar, val);
+					Object tVal = trans.translateValueToTarget(val);
+					ta.put(tVar, tVal);
 				}
-			}else{ //EXISTENTIAL
+			}else if (qf instanceof ExistentiallyQuantified){
 				System.out.println("Formula is existentially quantified, verifier providing value ...");
 				val = ver.provideValue(qf, vas?sa:ta);
 				System.out.println("Verifier provided: "+ val+ " . Continuing with the subforumula ...");
 				if(vas){
-					sa.add(qf.var, qf.type, val);
-					String tVal = trans.translateValueToTarget(qf.id, val);
-					ta.add(qf.var, tType, tVal);
+					sa.put(sVar, val);
+					Object tVal = trans.translateValueToTarget(val);
+					ta.put(tVar, tVal);
 				}else{
-					ta.add(qf.var, tType, val);
-					String sVal = trans.translateValueToSource(qf.id, val);
-					sa.add(qf.var, qf.type, sVal);
+					ta.put(tVar, val);
+					Object sVal = trans.translateValueToSource(val);
+					sa.put(sVar, sVal);
 				}
-			}
-			GS(qf.subformula, sa, ta, ss, ts, trans, ver, fal, vas);
+			}else{
+				throw new RuntimeException("New quantified type detected: "+ qf.getClass().getCanonicalName());
+			}			
+			GS(qf.getSubFormula(), sa, ta, trans, ver, fal, vas);
+		}else if (f instanceof Let<?>){
+			Let<?> lf = (Let<?>) f;
+			System.out.println("Formula is a let, computing the value to be bound ...");
+			//get var and translate it
+			Var<?> sVar = lf.getVar();
+			Var<?> tVar = trans.translateVarToTarget(sVar);
+			System.out.println("Source var "+ sVar + " translates to target var "+tVar);
 
+			//get function and translate it			
+			Function<?> sfn = lf.getFunction();
+			Function<?> tfn = trans.translateFunctionToTarget(sfn);
+			System.out.println("Function "+ sfn.getClass().getCanonicalName() +"("+sfn.getParameters()+ " translates to function "+ tfn.getClass().getCanonicalName()+"("+tfn.getParameters());
+
+			//Execute both functions
+			Object sRes = sfn.execute(sa);
+			Object tRes = tfn.execute(ta);
+			System.out.println("Function "+ sfn.getClass().getCanonicalName()+"("+sfn.getParameters()+") executed in environment "+ sa +" and produced "+ sRes );
+			System.out.println("Function "+ tfn.getClass().getCanonicalName()+"("+tfn.getParameters()+") executed in environment "+ ta +" and produced "+ tRes );
+			
+			//Update both environments
+			sa.put(sVar, sRes);
+			ta.put(tVar, tRes);
+			System.out.println("Source Result is bound to"+ sVar);
+			System.out.println("Target Result is bound to"+ tVar);
+			
+			//Continue with the Subformula
+			GS(lf.getSubFormula(), sa, ta, trans, ver, fal, vas);
+		}else{
+			throw new RuntimeException("New formula type detected: "+ f.getClass().getCanonicalName());
 		}
 	
 		

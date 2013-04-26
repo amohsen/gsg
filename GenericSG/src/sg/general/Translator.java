@@ -1,13 +1,17 @@
 package sg.general;
 
+import java.util.Map;
+
+import claim.Function;
 import claim.Predicate;
-import sg.Assignment;
+import claim.Var;
 
 public interface Translator {
-	Assignment translateClaimParameters(String id, Assignment sa);
-	String translateValueToSource(String id, String val);
-	String translateValueToTarget(String id, String val);
-	String translateTypeToTarget(String type);
-	/** TODO: in general returns a formula that may have a let */
-	Predicate translateSrcPredicate(Predicate p);
+	Map<Var<?>, Object> translateParametersToTarget(Map<Var<?>, Object> sa);
+	Object translateValueToSource(Object val);
+	Object translateValueToTarget(Object val);
+	Var<?> translateVarToTarget(Var<?> var);
+	Var<?> translateVarToSource(Var<?> var);
+	Predicate translatePredicateToTarget(Predicate p);
+	Function<?> translateFunctionToTarget(Function<?> fn);
 }

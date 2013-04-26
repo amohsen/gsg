@@ -1,5 +1,6 @@
 package claim;
 
+/** A marker inteface for formulas*/
 public interface Formula { 
-	String getId();
+	Var<?>[] getParameters();
 }

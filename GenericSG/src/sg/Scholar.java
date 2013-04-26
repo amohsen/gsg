@@ -1,8 +1,11 @@
 package sg;
 
+import java.util.Map;
+
 import claim.Compound;
 import claim.Formula;
 import claim.Quantified;
+import claim.Var;
 
 public interface Scholar {
 	public enum Decision{
@@ -14,7 +17,7 @@ public interface Scholar {
 	}
 	
 	String getName();
-	Position selectPosition(Formula f, Assignment g);
-	Decision selectSubformula(Compound f, Assignment g);
-	String provideValue(Quantified f, Assignment g);
+	Position selectPosition(Formula f, Map<Var<?>, Object> g);
+	Decision selectSubformula(Compound f, Map<Var<?>, Object> g);
+	Object provideValue(Quantified f, Map<Var<?>, Object> g);
 }
