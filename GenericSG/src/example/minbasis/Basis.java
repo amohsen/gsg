@@ -15,6 +15,9 @@ public class Basis implements UniversallyQuantified{
 	final Formula subFormula;
 	private final Var<?>[] params;
 
+	public Basis() {
+		this(new Var<Graph>("g", Graph.class), new Var("b", Collection.class));
+	}
 	public Basis(Var<Graph> g, Var<Collection<Node>> b) {
 		this._g = g;
 		this._b = b;
