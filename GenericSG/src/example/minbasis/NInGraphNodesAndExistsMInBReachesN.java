@@ -2,52 +2,23 @@ package example.minbasis;
 
 import java.util.Collection;
 
-import claim.Formula;
-import claim.Function;
-import claim.Let;
-import claim.Var;
+import claim.structure.LetI;
+import claim.structure.VarI;
+import claim.structure.impl.Let;
+import claim.structure.impl.Var;
 import example.minbasis.Graph.Node;
 
-public class NInGraphNodesAndExistsMInBReachesN implements Let<Collection<Node>> {
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	final Var<Collection<Node>> _t = new Var("t", Collection.class);
-	final Var<Graph> _g;
-	final Var<Node> _n;
-	final Var<Collection<Node>> _b;
-	
-	final Formula subFormula;
-	final Function<Collection<Node>> function;
-	
-	
-	public NInGraphNodesAndExistsMInBReachesN(Var<Graph> g, 
-			Var<Collection<Node>> b, Var<Node> n) {
-		this._g = g;
-		this._n = n;
-		this._b = b;
-		this.subFormula = new NInTandExistsMInBReachesN(_t, _n, _b, _g);
-		this.function = new GraphNodes(_g);
-		this.params = new Var<?>[]{_g, _b, _n};
+public class NInGraphNodesAndExistsMInBReachesN extends Let<Collection<Node>> implements LetI<Collection<Node>> {
+
+	public NInGraphNodesAndExistsMInBReachesN(VarI<Graph> g, 
+			VarI<Collection<Node>> b, VarI<Node> n) {
+		this(new Var("t", Collection.class), g, b, n);
 	}
 
-	private final Var<?>[] params; 
-	@Override
-	public Var<?>[] getParameters() {
-		return params;
+	public NInGraphNodesAndExistsMInBReachesN(
+			VarI<Collection<Node>> t, 
+			VarI<Graph> g, 
+			VarI<Collection<Node>> b, VarI<Node> n) {
+		super(t, new NInTandExistsMInBReachesN(t, n, b, g), new GraphNodes(g), g, b, n);
 	}
-
-	@Override
-	public Var<Collection<Node>> getVar() {
-		return _t;
-	}
-
-	@Override
-	public Formula getSubFormula() {
-		return subFormula;
-	}
-
-	@Override
-	public Function<Collection<Node>> getFunction() {
-		return function;
-	}
-
 }

@@ -3,28 +3,22 @@ package example.minbasis;
 import java.util.Collection;
 import java.util.Map;
 
-import claim.Function;
-import claim.Var;
+import claim.structure.FunctionI;
+import claim.structure.VarI;
+import claim.structure.impl.Formula;
 import example.minbasis.Graph.Node;
 
-public class GraphNodes implements Function<Collection<Node>>{
-	final Var<Graph> _g;
+public class GraphNodes extends Formula implements FunctionI<Collection<Node>>{
+	final VarI<Graph> _g;
 	
-	final Var<?>[] params;
 	
-	public GraphNodes(Var<Graph> g) {
+	public GraphNodes(VarI<Graph> g) {
+		super(g);
 		this._g = g;
-		this.params = new Var<?>[]{_g};
 	}
 
 	@Override
-	public Var<?>[] getParameters() {
-		return params;
-	}
-
-	@Override
-	public Collection<Node> execute(Map<Var<?>, Object> env) {
+	public Collection<Node> execute(Map<VarI<?>, Object> env) {
 		throw new RuntimeException("example.minbasis.GraphNodes.execute(..) is not implemented!");
 	}
-
 }

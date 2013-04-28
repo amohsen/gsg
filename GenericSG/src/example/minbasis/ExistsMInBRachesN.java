@@ -2,40 +2,20 @@ package example.minbasis;
 
 import java.util.Collection;
 
-import claim.ExistentiallyQuantified;
-import claim.Formula;
-import claim.Var;
+import claim.structure.ExistentiallyQuantifiedI;
+import claim.structure.VarI;
+import claim.structure.impl.Quantified;
+import claim.structure.impl.Var;
 import example.minbasis.Graph.Node;
 
-public class ExistsMInBRachesN implements ExistentiallyQuantified{
-	final Var<Node> _m = new Var<Node>("m", Node.class);
-	final Var<Graph> _g;
-	final Var<Node> _n;
-	final Var<Collection<Node>> _b;
-	final Formula subFormula;
-	private final Var<?>[] params;
+public class ExistsMInBRachesN extends Quantified implements ExistentiallyQuantifiedI{
 	
-	public ExistsMInBRachesN(Var<Graph> g, Var<Node> n, Var<Collection<Node>> b) {
-		this._g = g;
-		this._n = n;
-		this._b = b;
-		this.subFormula = new MInBandReachesN(_m, _b, _n, _g);
-		this.params = new Var<?>[]{_m, _b, _n, _g};
+	public ExistsMInBRachesN(VarI<Graph> g, VarI<Node> n, VarI<Collection<Node>> b) {
+		this(new Var<Node>("m", Node.class), g, n, b);
 	}
 	
-	@Override
-	public Var<?> getVar() {
-		return _m;
-	}
-	
-	@Override
-	public Formula getSubFormula() {
-		return subFormula;
-	}
-
-	@Override
-	public Var<?>[] getParameters() {
-		return params;
+	private ExistsMInBRachesN(VarI<Node> m, VarI<Graph> g, VarI<Node> n, VarI<Collection<Node>> b) {
+		super(m, new MInBandReachesN(m, b, n, g), g, n, b);
 	}
 	
 }

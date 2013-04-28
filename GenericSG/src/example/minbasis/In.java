@@ -3,31 +3,26 @@ package example.minbasis;
 import java.util.Collection;
 import java.util.Map;
 
-import claim.Predicate;
-import claim.Var;
+import claim.structure.PredicateI;
+import claim.structure.VarI;
+import claim.structure.impl.Formula;
 
-public class In<E, T extends Collection<E>> implements Predicate{
-	final Var<E> _element;
-	final Var<T> _set;
-	private final Var<?>[] params;
+public class In<E, T extends Collection<E>> extends Formula implements PredicateI{
+	final VarI<E> _element;
+	final VarI<T> _set;
 	
-	public In(Var<E> _element, Var<T> _set) {
-		this._element = _element;
-		this._set = _set;
-		this.params = new Var[]{_element, _set};
+	public In(VarI<E> element, VarI<T> set) {
+		super(element, set);
+		this._element = element;
+		this._set = set;
 	}
 
 	@Override
-	public Boolean execute(Map<Var<?>, Object> env) {
+	public Boolean execute(Map<VarI<?>, Object> env) {
 		Object element = env.get(_element);
 		Collection<?> set = (Collection<?>) env.get(_set);
 		
 		return set.contains(element);
-	}
-
-	@Override
-	public Var<?>[] getParameters() {
-		return params;
 	}
 
 }

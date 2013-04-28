@@ -4,8 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import claim.Formula;
-import claim.Var;
+import claim.structure.FormulaI;
+import claim.structure.VarI;
+import claim.structure.impl.Var;
 import sg.Scholar;
 import sg.SemanticGame;
 
@@ -15,9 +16,9 @@ public class SaddlePointLab {
 		Scholar s1 = new SaddlePointScholar("Scholar1");
 		Scholar s2 = new SaddlePointScholar("Scholar2");
 		
-		Var<Double> q = new Var<Double>("q", Double.class);
-		Formula f = new Saddle(q);
-		Map<Var<?>, Object> env = new HashMap<Var<?>, Object>();
+		VarI<Double> q = new Var<Double>("q", Double.class);
+		FormulaI f = new Saddle(q);
+		Map<VarI<?>, Object> env = new HashMap<VarI<?>, Object>();
 		env.put(q, r.nextDouble());
 		
 		SemanticGame.SG(f, env, s1, s2);

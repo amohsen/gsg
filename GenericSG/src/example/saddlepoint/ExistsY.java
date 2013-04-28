@@ -1,35 +1,22 @@
 package example.saddlepoint;
 
-import claim.ExistentiallyQuantified;
-import claim.Formula;
-import claim.Var;
+import claim.structure.ExistentiallyQuantifiedI;
+import claim.structure.VarI;
+import claim.structure.impl.Quantified;
+import claim.structure.impl.Var;
 
-public class ExistsY implements ExistentiallyQuantified{
-	final Var<Double> _y = new Var<Double>("y", Double.class);
-	final Var<Double> _x, _q;
-	final Formula subFormula;
-	private final Var<?>[] params;
+public class ExistsY extends Quantified implements ExistentiallyQuantifiedI{
 	
-	public ExistsY(Var<Double> x, Var<Double> q) {
-		this._x = x;
-		this._q = q;
-		this.subFormula = new Quality(_x, _y, _q);
-		this.params = new Var[]{_x, _q};
-	}
-
-	@Override
-	public Var<?> getVar() {
-		return _y;
-	}
-
-	@Override
-	public Formula getSubFormula() {
-		return subFormula;
-	}
-
-	@Override
-	public Var<?>[] getParameters() {
-		return params;
+	public ExistsY(){
+		this(new Var<Double>("x", Double.class), new Var<Double>("q", Double.class));
 	}
 	
+	public ExistsY(VarI<Double> x, VarI<Double> q) {
+		this(new Var<Double>("y", Double.class), x, q);
+	}
+	
+	private ExistsY(VarI<Double> y, VarI<Double> x, VarI<Double> q) {
+		super(y, new Quality(x, y, q), x, q);
+	}
+
 }

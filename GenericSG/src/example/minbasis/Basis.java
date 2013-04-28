@@ -2,43 +2,22 @@ package example.minbasis;
 
 import java.util.Collection;
 
-import claim.Formula;
-import claim.UniversallyQuantified;
-import claim.Var;
+import claim.structure.UniversallyQuantifiedI;
+import claim.structure.VarI;
+import claim.structure.impl.Quantified;
+import claim.structure.impl.Var;
 import example.minbasis.Graph.Node;
 
-public class Basis implements UniversallyQuantified{
-	final Var<Node> _n = new Var<Node>("n", Node.class);
-	final Var<Graph> _g;
-	final Var<Collection<Node>> _b;
-
-	final Formula subFormula;
-	private final Var<?>[] params;
+public class Basis extends Quantified implements UniversallyQuantifiedI{
 
 	public Basis() {
-		this(new Var<Graph>("g", Graph.class), new Var("b", Collection.class));
+		this(new Var<Graph>("g", Graph.class), new Var("b", Collection.class, Node.class));
 	}
-	public Basis(Var<Graph> g, Var<Collection<Node>> b) {
-		this._g = g;
-		this._b = b;
-		this.subFormula = new NInGraphNodesAndExistsMInBReachesN(_g, _b, _n);
-		this.params = new Var<?>[]{_g, _b};
+	public Basis(VarI<Graph> g, VarI<Collection<Node>> b) {
+		this(new Var<Node>("n", Node.class), g, b);
 	}
-
-	@Override
-	public Var<?> getVar() {
-		return _n;
+	
+	public Basis(VarI<Node> n, VarI<Graph> g, VarI<Collection<Node>> b) {
+		super(n, new NInGraphNodesAndExistsMInBReachesN(g, b, n), g, b);
 	}
-	@Override
-	public Formula getSubFormula() {
-		return subFormula;
-	}
-	@Override
-	public Var<?>[] getParameters() {
-		return params;
-	}
-
-
-
-
 }

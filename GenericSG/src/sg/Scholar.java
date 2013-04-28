@@ -2,10 +2,10 @@ package sg;
 
 import java.util.Map;
 
-import claim.Compound;
-import claim.Formula;
-import claim.Quantified;
-import claim.Var;
+import claim.structure.CompoundI;
+import claim.structure.FormulaI;
+import claim.structure.QuantifiedI;
+import claim.structure.VarI;
 
 public interface Scholar {
 	public enum Decision{
@@ -17,7 +17,7 @@ public interface Scholar {
 	}
 	
 	String getName();
-	Position selectPosition(Formula f, Map<Var<?>, Object> g);
-	Decision selectSubformula(Compound f, Map<Var<?>, Object> g);
-	Object provideValue(Quantified f, Map<Var<?>, Object> g);
+	Position selectPosition(FormulaI f, Map<VarI<?>, Object> g);
+	Decision selectSubformula(CompoundI f, Map<VarI<?>, Object> g);
+	Object provideValue(QuantifiedI f, Map<VarI<?>, Object> g);
 }
