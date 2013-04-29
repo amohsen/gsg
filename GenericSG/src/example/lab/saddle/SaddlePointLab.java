@@ -1,4 +1,4 @@
-package example.saddlepoint;
+package example.lab.saddle;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,6 +7,7 @@ import java.util.Random;
 import claim.structure.FormulaI;
 import claim.structure.VarI;
 import claim.structure.impl.Var;
+import example.syntax.saddlepoint.Saddle;
 import sg.Scholar;
 import sg.SemanticGame;
 

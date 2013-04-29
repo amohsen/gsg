@@ -1,4 +1,4 @@
-package example.saddlepoint;
+package example.lab.saddle;
 
 import java.util.Map;
 import java.util.Random;

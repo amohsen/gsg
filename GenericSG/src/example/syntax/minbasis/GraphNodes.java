@@ -1,19 +1,18 @@
-package example.minbasis;
+package example.syntax.minbasis;
 
 import java.util.Collection;
 import java.util.Map;
 
-import claim.structure.FunctionI;
 import claim.structure.VarI;
-import claim.structure.impl.Formula;
-import example.minbasis.Graph.Node;
+import claim.structure.impl.Function;
+import example.syntax.minbasis.Graph.Node;
 
-public class GraphNodes extends Formula implements FunctionI<Collection<Node>>{
+public class GraphNodes extends Function<Collection<Node>> {
 	final VarI<Graph> _g;
-	
-	
+
+
 	public GraphNodes(VarI<Graph> g) {
-		super(g);
+		super(new VarI[]{g});
 		this._g = g;
 	}
 

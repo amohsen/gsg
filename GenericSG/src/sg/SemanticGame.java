@@ -75,7 +75,7 @@ public class SemanticGame {
 			System.out.println("Formula is a let, computing the value to be bound ...");
 			FunctionI<?> fun = lf.getFunction();
 			Object res = fun.execute(a);
-			System.out.println("Function "+ fun.getClass().getCanonicalName()+"("+fun.getParameters()+") executed in environment "+ a +" and produced "+ res );
+			System.out.println("Function "+ fun.getClass().getCanonicalName()+"("+fun.getArguments()+") executed in environment "+ a +" and produced "+ res );
 			a.put(lf.getVar(), res);
 			System.out.println("Result is bound to "+ lf.getVar());
 			SG(lf.getSubFormula(), a, ver, fal);

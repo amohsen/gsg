@@ -40,13 +40,13 @@ public class GeneralizedSemanticGame {
 			System.out.println("Formula is a predicate, evaluating in both structures ...");
 			//Execute source predicate in sa
 			boolean sResult = pf.execute(sa);
-			System.out.println("Predicate "+ pf.getClass().getCanonicalName() +"(" + pf.getParameters() + ") "+(sResult?"holds":"does not hold")+" under assignment "+ sa);
+			System.out.println("Predicate "+ pf.getClass().getCanonicalName() +"(" + pf.getArguments() + ") "+(sResult?"holds":"does not hold")+" under assignment "+ sa);
 			//Translate source predicate to the target model
 			PredicateI tp = trans.translatePredicateToTarget(pf);
-			System.out.println("Predicate "+ pf.getClass().getCanonicalName() +"(" + pf.getParameters() + ") "+ " translates to predicate "+ tp.getClass().getCanonicalName()+"(" + tp.getParameters() + ") ");
+			System.out.println("Predicate "+ pf.getClass().getCanonicalName() +"(" + pf.getArguments() + ") "+ " translates to predicate "+ tp.getClass().getCanonicalName()+"(" + tp.getArguments() + ") ");
 			//Execute target predicate in ta
 			boolean tResult = tp.execute(ta);
-			System.out.println("Predicate "+ tp.getClass().getCanonicalName() +"(" + tp.getParameters() + ") "+(tResult?"holds":"does not hold")+" under assignment "+ ta);
+			System.out.println("Predicate "+ tp.getClass().getCanonicalName() +"(" + tp.getArguments() + ") "+(tResult?"holds":"does not hold")+" under assignment "+ ta);
 			//Check the results
 			if(sResult!=tResult){
 				//Translation is not ok
@@ -126,13 +126,13 @@ public class GeneralizedSemanticGame {
 			//get function and translate it			
 			FunctionI<?> sfn = lf.getFunction();
 			FunctionI<?> tfn = trans.translateFunctionToTarget(sfn);
-			System.out.println("Function "+ sfn.getClass().getCanonicalName() +"("+sfn.getParameters()+ " translates to function "+ tfn.getClass().getCanonicalName()+"("+tfn.getParameters());
+			System.out.println("Function "+ sfn.getClass().getCanonicalName() +"("+sfn.getArguments()+ " translates to function "+ tfn.getClass().getCanonicalName()+"("+tfn.getArguments());
 
 			//Execute both functions
 			Object sRes = sfn.execute(sa);
 			Object tRes = tfn.execute(ta);
-			System.out.println("Function "+ sfn.getClass().getCanonicalName()+"("+sfn.getParameters()+") executed in environment "+ sa +" and produced "+ sRes );
-			System.out.println("Function "+ tfn.getClass().getCanonicalName()+"("+tfn.getParameters()+") executed in environment "+ ta +" and produced "+ tRes );
+			System.out.println("Function "+ sfn.getClass().getCanonicalName()+"("+sfn.getArguments()+") executed in environment "+ sa +" and produced "+ sRes );
+			System.out.println("Function "+ tfn.getClass().getCanonicalName()+"("+tfn.getArguments()+") executed in environment "+ ta +" and produced "+ tRes );
 			
 			//Update both environments
 			sa.put(sVar, sRes);

@@ -1,16 +1,15 @@
-package example.saddlepoint;
+package example.syntax.saddlepoint;
 
 import java.util.Map;
 
-import claim.structure.PredicateI;
 import claim.structure.VarI;
-import claim.structure.impl.Formula;
+import claim.structure.impl.Predicate;
 
-public class Quality extends Formula implements PredicateI{
+public class Quality extends Predicate{
 	private final VarI<Double> _x, _y, _q;
 	
 	public Quality(VarI<Double> x, VarI<Double> y, VarI<Double> q) {
-		super(x, y, q);
+		super(new VarI[]{x, y, q});
 		this._x = x;
 		this._y = y;
 		this._q = q;

@@ -1,18 +1,17 @@
-package example.minbasis;
+package example.syntax.minbasis;
 
 import java.util.Map;
 
-import claim.structure.PredicateI;
 import claim.structure.VarI;
-import claim.structure.impl.Formula;
-import example.minbasis.Graph.Node;
+import claim.structure.impl.Predicate;
+import example.syntax.minbasis.Graph.Node;
 
-public class Reaches extends Formula implements PredicateI{
+public class Reaches extends Predicate{
 	final VarI<Graph> _g;
 	final VarI<Node> _n, _m;
 	
 	public Reaches(VarI<Graph> g, VarI<Node> n, VarI<Node> m) {
-		super(g, n, m);
+		super(new VarI[]{g, n, m});
 		this._g = g;
 		this._n = n;
 		this._m = m;
