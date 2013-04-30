@@ -1,4 +1,4 @@
-package sg.general;
+package lab;
 
 import java.util.Map;
 

@@ -2,8 +2,11 @@ package sg.general;
 
 import java.util.Map;
 
-import sg.Scholar;
-import sg.Scholar.Decision;
+import lab.Scholar;
+import lab.Translator;
+import lab.TranslatorFactory;
+import lab.Scholar.Decision;
+
 import claim.structure.AndCompoundI;
 import claim.structure.CompoundI;
 import claim.structure.ExistentiallyQuantifiedI;
@@ -52,9 +55,9 @@ public class GeneralizedSemanticGame {
 				//Translation is not ok
 				System.out.println("Translator "+ trans.getClass().getCanonicalName() +" is incorrect. Source and translated formulas are not equisatisfiable.");
 			}else if(sResult){ //verifier wins
-				System.out.println("Scholar "+ ver.getName() + "wins!");
+				System.out.println("Scholar "+ ver.getName() + " wins!");
 			}else{ // falsifier wins
-				System.out.println("Scholar "+ fal.getName() + "wins!");
+				System.out.println("Scholar "+ fal.getName() + " wins!");
 			}
 		}else if (f instanceof NegatedI) {
 			NegatedI nf = (NegatedI) f;

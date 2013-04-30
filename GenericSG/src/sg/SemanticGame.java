@@ -2,7 +2,9 @@ package sg;
 
 import java.util.Map;
 
-import sg.Scholar.Decision;
+import lab.Scholar;
+import lab.Scholar.Decision;
+
 import claim.structure.AndCompoundI;
 import claim.structure.CompoundI;
 import claim.structure.ExistentiallyQuantifiedI;
@@ -26,10 +28,10 @@ public class SemanticGame {
 			System.out.println("Formula is a predicate, evaluating ...");
 			if(pf.execute(a)){
 				System.out.println("Predicate "+ pf.getClass().getCanonicalName() + " holds under assignment "+ a);
-				System.out.println("Scholar "+ ver.getName() + "wins!");
+				System.out.println("Scholar "+ ver.getName() + " wins!");
 			}else{
 				System.out.println("Predicate "+ pf.getClass().getCanonicalName() + " does not hold under assignment "+ a);
-				System.out.println("Scholar "+ fal.getName() + "wins!");
+				System.out.println("Scholar "+ fal.getName() + " wins!");
 			}
 		}else if (f instanceof NegatedI) {
 			NegatedI nf = (NegatedI) f;

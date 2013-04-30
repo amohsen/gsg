@@ -26,6 +26,7 @@ public abstract class Formula implements FormulaI{
 	}
 
 	
+	@Override
 	public String format(boolean shortName, StringBuilder...optSB){
 		StringBuilder sb = optSB.length==0?new StringBuilder():optSB[0];
 		Collection<FormulaI> formulas = AllSubformulas(this); 

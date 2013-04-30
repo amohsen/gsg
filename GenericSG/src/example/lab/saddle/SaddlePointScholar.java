@@ -3,11 +3,12 @@ package example.lab.saddle;
 import java.util.Map;
 import java.util.Random;
 
+import lab.Scholar;
+
 import claim.structure.CompoundI;
 import claim.structure.FormulaI;
 import claim.structure.QuantifiedI;
 import claim.structure.VarI;
-import sg.Scholar;
 
 public class SaddlePointScholar implements Scholar{
 

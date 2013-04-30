@@ -1,4 +1,4 @@
-package sg;
+package lab;
 
 import java.util.Map;
 
@@ -8,12 +8,23 @@ import claim.structure.QuantifiedI;
 import claim.structure.VarI;
 
 public interface Scholar {
+	
 	public enum Decision{
 		LEFT, RIGHT;
+		
+		public Decision revese(){
+			if(this == LEFT) return RIGHT;
+			return LEFT;
+		}
 	}
 	
 	public enum Position{
 		FALSIFIER, VERIFIER;
+		
+		public Position reverse(){
+			if(this == FALSIFIER) return VERIFIER;
+			return FALSIFIER;
+		}
 	}
 	
 	String getName();
