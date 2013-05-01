@@ -20,7 +20,7 @@ import claim.structure.VarI;
 
 public class SemanticGame {
 	
-	public static void SG(FormulaI f, Map<VarI<?>, Object> a, Scholar ver, Scholar fal){
+	public static Scholar SG(FormulaI f, Map<VarI<?>, Object> a, Scholar ver, Scholar fal){
 		System.out.println("SG for formula: "+f.getClass().getCanonicalName()+". Verifier is "+ ver.getName() + ". Falsifier is "+ fal.getName()+".");
 		System.out.println("Assignment is: "+ a);
 		if (f instanceof PredicateI) {
@@ -29,14 +29,16 @@ public class SemanticGame {
 			if(pf.execute(a)){
 				System.out.println("Predicate "+ pf.getClass().getCanonicalName() + " holds under assignment "+ a);
 				System.out.println("Scholar "+ ver.getName() + " wins!");
+				return ver;
 			}else{
 				System.out.println("Predicate "+ pf.getClass().getCanonicalName() + " does not hold under assignment "+ a);
 				System.out.println("Scholar "+ fal.getName() + " wins!");
+				return fal;
 			}
 		}else if (f instanceof NegatedI) {
 			NegatedI nf = (NegatedI) f;
 			System.out.println("Formula is negated, reversing roles ...");
-			SG(nf.getSubFormula(), a, fal, ver);
+			return SG(nf.getSubFormula(), a, fal, ver);
 		}else if (f instanceof AndCompoundI) {
 			CompoundI cf = (CompoundI) f;
 			Decision d;
@@ -52,9 +54,9 @@ public class SemanticGame {
 				throw new RuntimeException("New compound type detected: "+ cf.getClass().getCanonicalName());
 			}
 			if(d == Decision.LEFT){
-				SG(cf.getLeft(), a, ver, fal);
+				return SG(cf.getLeft(), a, ver, fal);
 			}else{ //RIGHT
-				SG(cf.getRight(), a, ver, fal);
+				return SG(cf.getRight(), a, ver, fal);
 			}			
 		}else if (f instanceof QuantifiedI) {
 			QuantifiedI qf = (QuantifiedI) f;
@@ -71,7 +73,7 @@ public class SemanticGame {
 				throw new RuntimeException("New quantified type detected: "+ qf.getClass().getCanonicalName());
 			}			
 			a.put(qf.getVar(), val);
-			SG(qf.getSubFormula(), a , ver, fal);
+			return SG(qf.getSubFormula(), a , ver, fal);
 		}else if (f instanceof LetI<?>){
 			LetI<?> lf = (LetI<?>) f;
 			System.out.println("Formula is a let, computing the value to be bound ...");
@@ -80,7 +82,7 @@ public class SemanticGame {
 			System.out.println("Function "+ fun.getClass().getCanonicalName()+"("+fun.getArguments()+") executed in environment "+ a +" and produced "+ res );
 			a.put(lf.getVar(), res);
 			System.out.println("Result is bound to "+ lf.getVar());
-			SG(lf.getSubFormula(), a, ver, fal);
+			return SG(lf.getSubFormula(), a, ver, fal);
 		}else{
 			throw new RuntimeException("New formula type detected: "+ f.getClass().getCanonicalName());
 		}
