@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import utils.Pair;
+
 import lab.Scholar;
 import lab.Scholar.Position;
 import lab.impl.ScholarAdapter;
@@ -32,12 +34,12 @@ public class SaddlePointLab {
 		double[] avgEstMissClassification = new double[10];
 
 		for(int exp = 0 ; exp<10; exp++){
-			meanPerturbation[exp] = exp * 0.1;
+			double mp = exp * 0.1;
 			double missClassification = 0;
 			for(int i = 0; i< 400 ;i++){
-				
-
-				Scholar[] scholars = generateScholars(7, meanPerturbation[exp], 0);
+				Pair<Scholar[], Double> generatedScholars = generateScholars(7, mp, 0.3); 
+				Scholar[] scholars = generatedScholars.first;
+				meanPerturbation[exp] = generatedScholars.second;
 				History history = roundRobinCAG(f, env, scholars);
 				double[] strengths = scholarStrength(history.scores);
 				double estimatedCorrectness = estimateCorrectness(history.records, strengths);
@@ -110,15 +112,19 @@ Mean perturbation 	 MissClassification
 		//		System.out.println("===============");
 		//		System.out.println("Estimated Correctness : "+ estimatedCorrectness);
 	}
-
-	static Scholar[] generateScholars(int numScholars, double mean, double sd){
+	
+	static Pair<Scholar[],Double> generateScholars(int numScholars, double mean, double sd){
 		Random r = new Random();
 		Scholar[] scholars = new Scholar[numScholars];
-		for(int i=0;i<numScholars;i++){
+		double sumPerturbation = 0;
+		for(int i=1;i<numScholars;i++){
 			double perturbation = mean + r.nextGaussian() * sd;
+			sumPerturbation += perturbation;
 			scholars[i] = new ScholarAdapter(new SaddleScholar("PS"+perturbation, perturbation ));
 		}
-		return scholars;
+		scholars[0] = new ScholarAdapter(new SaddleScholar("PSperfect", 0 ));
+		double avgPerturbation = sumPerturbation/numScholars;
+		return new Pair(scholars, avgPerturbation);
 	}
 
 	static History roundRobinCAG(FormulaI f, Map<VarI<?>, Object> env, Scholar[] scholars){

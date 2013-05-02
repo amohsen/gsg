@@ -25,6 +25,9 @@ public interface Scholar {
 			if(this == FALSIFIER) return VERIFIER;
 			return FALSIFIER;
 		}
+		public static Position create(boolean b){
+			return b?VERIFIER:FALSIFIER;
+		} 
 	}
 	
 	String getName();

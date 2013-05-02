@@ -5,9 +5,8 @@ import java.util.Map;
 
 import claim.structure.VarI;
 import claim.structure.impl.Function;
-import example.syntax.minbasis.Graph.Node;
 
-public class GraphNodes extends Function<Collection<Node>> {
+public class GraphNodes extends Function<Collection<Integer>> {
 	final VarI<Graph> _g;
 
 
@@ -17,7 +16,7 @@ public class GraphNodes extends Function<Collection<Node>> {
 	}
 
 	@Override
-	public Collection<Node> execute(Map<VarI<?>, Object> env) {
+	public Collection<Integer> execute(Map<VarI<?>, Object> env) {
 		throw new RuntimeException("example.minbasis.GraphNodes.execute(..) is not implemented!");
 	}
 }
