@@ -5,12 +5,12 @@ import java.util.Random;
 
 import example.syntax.saddlepoint.Saddle;
 import example.syntax.saddlepoint.ExistsY;
-import lab.Scholar.Position;
+import lab.impl.Strategy;
 
 /** 
-Generated with claim.services.BabyScholarGenerator for Formula example.syntax.saddlepoint.Saddle
+	Generated with claim.services.BabyScholarGenerator for Formula example.syntax.saddlepoint.Saddle
  */
-public class SaddleScholar{
+public class SaddleStrategy extends Strategy{
 
 	private final String name;
 	/** Perturbation Level*/
@@ -20,7 +20,7 @@ public class SaddleScholar{
 		return name;
 	}
 
-	public SaddleScholar(String name, double p) {
+	public SaddleStrategy(String name, double p) {
 		this.name = name;
 		this.p = p;
 	}
@@ -43,13 +43,13 @@ public class SaddleScholar{
 		return perturb(x/(2-2*x));
 	}
 
-	/** 
-	Saddle(q∈Double) := ∀x∈Double:ExistsY(x, q)
-	ExistsY(x∈Double, q∈Double) := ∃y∈Double:Quality(x, y, q)
-	 */
-	public Position selectPosition(Saddle formula, Double q){
-		return perturb(q)>0.61803398875?Position.FALSIFIER:Position.VERIFIER;
-	}
+//	/** 
+//	Saddle(q∈Double) := ∀x∈Double:ExistsY(x, q)
+//	ExistsY(x∈Double, q∈Double) := ∃y∈Double:Quality(x, y, q)
+//	 */
+//	public Position selectPosition(Saddle formula, Double q){
+//		return perturb(q)>0.61803398875?Position.FALSIFIER:Position.VERIFIER;
+//	}
 	
 	double perturb(double v){
 		double pv = v + r.nextGaussian() * p;

@@ -1,7 +1,8 @@
 package lab.impl;
 
-import java.lang.reflect.Method;
 import java.util.Map;
+
+import sg.SemanticGame;
 
 import claim.structure.AndCompoundI;
 import claim.structure.CompoundI;
@@ -9,29 +10,28 @@ import claim.structure.FormulaI;
 import claim.structure.PredicateI;
 import claim.structure.QuantifiedI;
 import claim.structure.VarI;
-import lab.Scholar;
+import lab.ScholarI;
+import lab.StrategyI;
 
-public class ScholarAdapter implements Scholar{
-	private final Object inner;
+/**
+ * Implements the default scholar behavior
+ * 
+ * */
+public final class Scholar implements ScholarI{
+	private final StrategyI strategy;
 	
-	public ScholarAdapter(Object inner) {
-		this.inner = inner;
+	public Scholar(StrategyI strategy) {
+		this.strategy = strategy;
 	}
 
 	@Override
 	public String getName() {
-		try {
-			Method getNameMethod = inner.getClass().getMethod("getName");
-			return (String) getNameMethod.invoke(inner);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+		return strategy.getName();
 	}
 
 	@Override
 	public Position selectPosition(FormulaI f, Map<VarI<?>, Object> env) {
-		return delegate("selectPosition", f, env);
+		return SemanticGame.SG(f, env, this, this);
 	}
 
 	@Override
@@ -73,27 +73,16 @@ public class ScholarAdapter implements Scholar{
 
 	@Override
 	public Object provideValue(QuantifiedI f, Map<VarI<?>, Object> env) {
-		return delegate("support", f, env);
+		return strategy.provideValue(f, env);
+	}
+	
+	@Override
+	public String toString() {
+		return getName();
 	}
 
-	private <T> T delegate(String methodName, FormulaI f, Map<VarI<?>, Object> env) {
-		VarI<?>[] args = f.getArguments();
-		Class<?>[] argClasses = new Class<?>[args.length + 1];
-		argClasses[0] = f.getClass();
-		for (int i = 0; i < args.length; i++) {
-			argClasses[i+1] = args[i].getType();
-		}
-		Object[] argVals = new Object[argClasses.length];
-		argVals[0] = f;
-		for (int i = 0; i < args.length; i++) {
-			argVals[i+1] = env.get(args[i]);
-		}
-		try {
-			Method selectPositionMethod = inner.getClass().getMethod(methodName, argClasses);
-			return (T) selectPositionMethod.invoke(inner, argVals);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+	@Override
+	public StrategyI getStrategy() {
+		return strategy;
 	}
 }

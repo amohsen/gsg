@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import lab.Scholar.Position;
+import lab.ScholarI.Position;
 import claim.structure.CompoundI;
 import claim.structure.FormulaI;
 import claim.structure.PredicateI;
@@ -63,10 +63,12 @@ public class BabyScholarGenerator {
 		
 		for (Class<?> imp : imports) {
 			sb.append("import ");
-			sb.append(imp.getName());
+			sb.append(imp.getCanonicalName());
 			sb.append(";\n");
 		}
-		sb.append("import lab.Scholar.Position;\n");
+		sb.append("import lab.ScholarI.Position;\n");
+		sb.append("import lab.impl.Scholar;\n");
+
 		sb.append("\n");
 		
 		sb.append("/** \n");
@@ -75,7 +77,7 @@ public class BabyScholarGenerator {
 
 		sb.append("public class ");
 		sb.append(className);
-		sb.append("{\n\n");
+		sb.append(" extends Scholar {\n\n");
 		
 		sb.append("private final String name;\n\n");
 

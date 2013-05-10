@@ -33,4 +33,9 @@ public class Var<T> implements VarI<T>{
 	public Class<?>[] getTypeParams() {
 		return paramTypes;
 	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }

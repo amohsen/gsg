@@ -1,17 +1,17 @@
 package example.lab.saddle;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import utils.ArrayUtils;
 import utils.Pair;
 
-import lab.Scholar;
-import lab.Scholar.Position;
-import lab.impl.ScholarAdapter;
+import lab.ScholarI;
+import lab.ScholarI.Position;
+import lab.impl.Scholar;
 
 import claim.structure.FormulaI;
 import claim.structure.VarI;
@@ -30,6 +30,39 @@ public class SaddlePointLab {
 		boolean claimIsFalse = qval>0.61803398875; 
 		env.put(q, qval);
 		
+		ScholarI[] scholars = new ScholarI[10];
+		for (int i = 0; i < scholars.length; i++) {
+			double pLevel = 0.01 * i;
+			scholars[i] = new Scholar(new SaddleStrategy("p"+pLevel, pLevel));
+		}
+		
+		double[][] scores = new double[10][10];
+		for (int i = 0; i<10; i++) {
+			for (int j = 0; j<10; j++) {
+				double iwinner = 0;
+				double iloser = 0;
+				for(int n = 0 ; n<400 ; n++){
+					Position winnerPosition = SG(f, env, scholars[i], scholars[j]);
+					if(winnerPosition == Position.VERIFIER /*scholars[i]*/){
+						iwinner++;
+					}else{
+						iloser++;
+					}
+				}
+				scores[i][j] = iwinner/(iwinner+iloser);
+			}
+		}
+		System.out.println(ArrayUtils.format(scores));
+	}
+	
+	public static void main1(String[] args) {
+		VarI<Double> q = new Var<Double>("q", Double.class);
+		FormulaI f = new Saddle(q);
+		Map<VarI<?>, Object> env = new HashMap<VarI<?>, Object>();
+		double qval = 0.61803398875;
+		boolean claimIsFalse = qval>0.61803398875; 
+		env.put(q, qval);
+		
 		double[] meanPerturbation = new double[10];
 		double[] avgEstMissClassification = new double[10];
 
@@ -37,8 +70,8 @@ public class SaddlePointLab {
 			double mp = exp * 0.1;
 			double missClassification = 0;
 			for(int i = 0; i< 400 ;i++){
-				Pair<Scholar[], Double> generatedScholars = generateScholars(7, mp, 0.3); 
-				Scholar[] scholars = generatedScholars.first;
+				Pair<ScholarI[], Double> generatedScholars = generateScholars(7, mp, 0.3); 
+				ScholarI[] scholars = generatedScholars.first;
 				meanPerturbation[exp] = generatedScholars.second;
 				History history = roundRobinCAG(f, env, scholars);
 				double[] strengths = scholarStrength(history.scores);
@@ -113,21 +146,21 @@ Mean perturbation 	 MissClassification
 		//		System.out.println("Estimated Correctness : "+ estimatedCorrectness);
 	}
 	
-	static Pair<Scholar[],Double> generateScholars(int numScholars, double mean, double sd){
+	static Pair<ScholarI[],Double> generateScholars(int numScholars, double mean, double sd){
 		Random r = new Random();
-		Scholar[] scholars = new Scholar[numScholars];
+		ScholarI[] scholars = new ScholarI[numScholars];
 		double sumPerturbation = 0;
 		for(int i=1;i<numScholars;i++){
 			double perturbation = mean + r.nextGaussian() * sd;
 			sumPerturbation += perturbation;
-			scholars[i] = new ScholarAdapter(new SaddleScholar("PS"+perturbation, perturbation ));
+			scholars[i] = new Scholar(new SaddleStrategy("PS"+perturbation, perturbation ));
 		}
-		scholars[0] = new ScholarAdapter(new SaddleScholar("PSperfect", 0 ));
+		scholars[0] = new Scholar( new SaddleStrategy("PSperfect", 0 ));
 		double avgPerturbation = sumPerturbation/numScholars;
 		return new Pair(scholars, avgPerturbation);
 	}
 
-	static History roundRobinCAG(FormulaI f, Map<VarI<?>, Object> env, Scholar[] scholars){
+	static History roundRobinCAG(FormulaI f, Map<VarI<?>, Object> env, ScholarI[] scholars){
 		int numScholars = scholars.length;
 		Collection<HistoryRecord> records = new ArrayList<HistoryRecord>();
 		int[][] scores = new int[numScholars][];
@@ -141,8 +174,8 @@ Mean perturbation 	 MissClassification
 				Position pi = scholars[i].selectPosition(f, env);
 				Position pj = scholars[j].selectPosition(f, env);
 				if(pi != pj){
-					Scholar winner = SG(f, env, pi==Position.VERIFIER?scholars[i]:scholars[j], pi==Position.FALSIFIER?scholars[i]:scholars[j]);
-					if(winner == scholars[i]){
+					Position winnerPosition = SG(f, env, pi==Position.VERIFIER?scholars[i]:scholars[j], pi==Position.FALSIFIER?scholars[i]:scholars[j]);
+					if(winnerPosition == Position.VERIFIER/*scholars[i]*/){
 						scores[i][j]++;
 						records.add(new HistoryRecord(i, false, j, false, pi));
 					}else{
@@ -151,7 +184,10 @@ Mean perturbation 	 MissClassification
 					}
 				}else{ // same position
 					//Force j
-					Scholar winnerT1 = SG(f, env, pi==Position.VERIFIER?scholars[i]:scholars[j], pi==Position.VERIFIER?scholars[j]:scholars[i]);
+					ScholarI verifierT1 = pi==Position.VERIFIER?scholars[i]:scholars[j];
+					ScholarI falsifierT1 = pi==Position.VERIFIER?scholars[j]:scholars[i];
+					Position winnerT1Position = SG(f, env, verifierT1, falsifierT1);
+					ScholarI winnerT1 = winnerT1Position==Position.VERIFIER?verifierT1:falsifierT1;
 					if(winnerT1 == scholars[j]){
 						scores[j][i]++;
 						records.add(new HistoryRecord(j, true, i, false, pj));
@@ -159,7 +195,10 @@ Mean perturbation 	 MissClassification
 						records.add(new HistoryRecord(i, false, j, true, pi));
 					}
 					//Force i
-					Scholar winnerT2 = SG(f, env, pi==Position.VERIFIER?scholars[j]:scholars[i], pi==Position.VERIFIER?scholars[i]:scholars[j]);
+					ScholarI verifierT2 = pi==Position.VERIFIER?scholars[j]:scholars[i];
+					ScholarI falsifierT2 = pi==Position.VERIFIER?scholars[i]:scholars[j];
+					Position winnerT2Position = SG(f, env, verifierT2, falsifierT2);
+					ScholarI winnerT2 = winnerT2Position==Position.VERIFIER?verifierT2:falsifierT2;
 					if(winnerT2 == scholars[i]){
 						scores[i][j]++;
 						records.add(new HistoryRecord(i, true, j, false, pi));

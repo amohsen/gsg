@@ -2,10 +2,10 @@ package sg.general;
 
 import java.util.Map;
 
-import lab.Scholar;
+import lab.ScholarI;
 import lab.Translator;
 import lab.TranslatorFactory;
-import lab.Scholar.Decision;
+import lab.ScholarI.Decision;
 
 import claim.structure.AndCompoundI;
 import claim.structure.CompoundI;
@@ -24,7 +24,7 @@ public class GeneralizedSemanticGame {
 	public static void GS(FormulaI f, 
 			Map<VarI<?>, Object> sa, 
 			TranslatorFactory transFactory, 
-			Scholar ver, Scholar fal, boolean vas /*is the verifier at the source lab?*/){
+			ScholarI ver, ScholarI fal, boolean vas /*is the verifier at the source lab?*/){
 		Translator trans = transFactory.create();
 		Map<VarI<?>, Object> ta = trans.translateParametersToTarget(sa);
 		GS(f, sa, ta, trans, ver, fal, vas);
@@ -33,7 +33,7 @@ public class GeneralizedSemanticGame {
 	public static void GS(FormulaI f, 
 			Map<VarI<?>, Object> sa, Map<VarI<?>, Object> ta, 
 			Translator trans, 
-			Scholar ver, Scholar fal,
+			ScholarI ver, ScholarI fal,
 			boolean vas){
 		System.out.println("SG for formula: "+f.getClass().getCanonicalName()+". Verifier is "+ ver.getName() + ". Falsifier is "+ fal.getName()+". Verifier is "+ (vas?"":"not ") +"at source.");
 		System.out.println("Source assignment is: "+ sa);

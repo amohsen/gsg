@@ -6,7 +6,7 @@ import java.lang.Integer;
 import example.syntax.minbasis.Graph;
 import example.lab.basis.Formula.MinBasis;
 import example.lab.basis.Formula.HasBasisSize;
-import lab.Scholar.Position;
+import lab.ScholarI.Position;
 
 /** 
 	Generated with claim.services.BabyScholarGenerator for Formula example.lab.basis.Formula$MinBasis
